@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const database = {
   users: [
     {
+      id: 110,
       name: 'Peter',
       email: 'peter@gmail.com',
       password: 1234,
@@ -11,6 +12,7 @@ const database = {
       join: new Date()
     },
     {
+      id: 111,
       name: 'Lili',
       email: 'lili@gmail.com',
       password: 5678,
@@ -28,7 +30,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
-  res.send('server is working')
+  res.json(database.users)
 })
 
 app.post('/signin', (req, res) => {
@@ -40,8 +42,9 @@ app.post('/signin', (req, res) => {
 })
 
 app.post('/register', (req, res) => {
-  const {name, email, password} = req.body
+  const { id, name, email, password} = req.body
   database.users.push({
+    id,
     name,
     email,
     password,
@@ -49,6 +52,31 @@ app.post('/register', (req, res) => {
     join: new Date()
   })
   res.json(database.users[database.users.length - 1])
+})
+
+app.get('/profile/:id', (req, res) => {
+  const id = Number(req.params.id)
+  let found = false
+  database.users.forEach(user => {
+    if (id === user.id) {
+      found = true
+      return res.json(user)
+    }
+  })
+  if(!found) res.status(400).json('user not found')
+})
+
+app.put('/image', (req, res) => {
+  const id = Number(req.body.id)
+  let found = false
+  database.users.forEach(user => {
+    if(id === user.id) {
+      found = true
+      user.submition++
+      return res.json(user.submition)
+    }
+  })
+  if(!found) res.status(400).json('user not found')
 })
 
 app.listen(3000, () => {
