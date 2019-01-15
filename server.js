@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
-  res.send('<h1>server is working</h1>')
+  res.send('server is working')
 })
 
 app.post('/signin', (req, res) => {
