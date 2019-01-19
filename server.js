@@ -14,36 +14,11 @@ const db = knex({
   }
 })
 
-const database = {
-  users: [
-    {
-      id: '110',
-      name: 'Peter',
-      email: 'peter@gmail.com',
-      password: '1234',
-      submition: 0,
-      join: new Date()
-    },
-    {
-      id: '111',
-      name: 'Lili',
-      email: 'lili@gmail.com',
-      password: '5678',
-      submition: 0,
-      join: new Date()
-    }
-  ]
-}
-
 const app = express()
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 app.use(cors())
-
-app.get('/', (req, res) => {
-  res.json(database.users)
-})
 
 app.post('/signin', (req, res) => {
   db.select('email', 'hash')
@@ -107,7 +82,7 @@ app.put('/image', (req, res) => {
 })
 
 app.listen(3001, () => {
-  console.log('The server is listening on port 3000')
+  console.log('The server is listening on port 3001')
 })
 
 
