@@ -68,14 +68,12 @@ app.post('/register', (req, res) => {
 
 app.get('/profile/:id', (req, res) => {
   const id = Number(req.params.id)
-  let found = false
-  database.users.forEach(user => {
-    if (id === user.id) {
-      found = true
-      return res.json(user)
-    }
-  })
-  if(!found) res.status(400).json('user not found')
+  db.select('*').from('users').where({id})
+    .then(user => {
+      if(user.length) res.json(user)
+      else res.status(400).json('user not found')
+    })
+    .catch(err => res.status(400).json('error'))
 })
 
 app.put('/image', (req, res) => {
