@@ -5,6 +5,7 @@ const cors = require('cors')
 const knex = require('knex')
 
 const { handleRegister } = require('./handlers/register')
+const { handleSignin } = require('./handlers/signin')
 
 const db = knex({
   client: 'pg',
@@ -22,23 +23,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 app.use(cors())
 
-app.post('/signin', (req, res) => {
-  db.select('email', 'hash')
-    .from('login')
-    .where('email', '=', req.body.email)
-    .then(data => {
-      const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
-      if(isValid) {
-        return db.select('*')
-                  .from('users')
-                  .where('email', '=', req.body.email)
-                  .then(user => res.status(200).json(user[0]))
-      } else {
-        res.status(400).json('unable to login')
-      }
-    })
-    .catch(err => res.status(400).json('unable to login'))
-})
+app.post('/signin', (req, res) => handleSignin(req, res, db, bcrypt))
 
 app.post('/register', (req, res) => handleRegister(req, res, db, bcrypt))
 
