@@ -33,6 +33,3 @@ app.put('/image', (req, res) => handleImage(req, res, db))
 app.listen(3001, () => {
   console.log('The server is listening on port 3001')
 })
-
-
-
