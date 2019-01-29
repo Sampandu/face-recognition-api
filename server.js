@@ -4,6 +4,9 @@ const bcrypt = require('bcrypt-nodejs')
 const cors = require('cors')
 const knex = require('knex')
 
+const { handleRegister } = require('./handlers/register')
+const { handleSignin } = require('./handlers/signin')
+
 const db = knex({
   client: 'pg',
   connection: {
@@ -20,47 +23,9 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 app.use(cors())
 
-app.post('/signin', (req, res) => {
-  db.select('email', 'hash')
-    .from('login')
-    .where('email', '=', req.body.email)
-    .then(data => {
-      const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
-      if(isValid) {
-        return db.select('*')
-                  .from('users')
-                  .where('email', '=', req.body.email)
-                  .then(user => res.status(200).json(user[0]))
-      } else {
-        res.status(400).json('unable to login')
-      }
-    })
-    .catch(err => res.status(400).json('unable to login'))
-})
+app.post('/signin', (req, res) => handleSignin(req, res, db, bcrypt))
 
-app.post('/register', (req, res) => {
-  const { name, email, password } = req.body
-  const hash = bcrypt.hashSync(password)   //hashSync not hash
-
-  db.transaction(trx => {
-    trx.insert({email, hash})
-      .into('login')
-      .returning('email')
-      .then(loginEmail => {
-        return trx('users')     //return
-                .returning('*')
-                .insert({
-                  name: name,
-                  email: loginEmail[0],
-                  joined: new Date()
-                })
-                .then(user => res.json(user[0]))
-        })
-      .then(trx.commit)
-      .catch(trx.rollback)
-  })
-  .catch(err => res.status(400).json('unable to register'))
-})
+app.post('/register', (req, res) => handleRegister(req, res, db, bcrypt))
 
 app.get('/profile/:id', (req, res) => {
   const id = Number(req.params.id)
