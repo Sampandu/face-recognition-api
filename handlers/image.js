@@ -1,4 +1,4 @@
-require('../secrets');
+const { Clarifai_apikey } = process.env || require('../secrets');
 const Clarifai = require('clarifai');
 
 const app = new Clarifai.App({
