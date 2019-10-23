@@ -25,6 +25,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
+app.get('/', (req, res) => res.send('heroku works'));
 app.post('/signin', (req, res) => handleSignin(req, res, db, bcrypt));
 app.post('/register', (req, res) => handleRegister(req, res, db, bcrypt));
 app.get('/profile/:id', (req, res) => handleProfileGet(req, res, db));
